@@ -8,6 +8,8 @@
 </head>
 <body>
     <div class="container">
+        <fieldset>
+            <center><h3>Sign Up</h3></center>
     <form action="/signup" method="POST">
         <label for="name">Name:</label><br>
         <input type="text" id="name" name="name" required maxlength="20" autocomplete="off" autofocus><br><br>
@@ -35,9 +37,12 @@
     </form>
     <br>
     </div>
+   <div class="container">
+    <a href="/recover" style="text-decoration: none;">Forgot Username or Password ?</a></div><br>
     <div class="container">
-    <div class="container1"><br>
-        <a href="/recover" style="text-decoration: none;">Forgot Username or Password ?</a><br><br>
-        <a href="/admin" style="text-decoration: none;">Admin login</a>
-</div></div></body>
+    <a href="/admin" style="text-decoration: none;">Admin login</a></div>
+   </div>
+        
+
+</fieldset></body>
 </html>

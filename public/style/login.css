@@ -3,7 +3,18 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: medium;
 }
-
+fieldset{
+    width: 300px;
+    border-radius: 10px;
+}
+fieldset:focus {
+    border-color: #666;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+fieldset:hover {
+    border-color: #666;
+    box-shadow: 1 0 10px rgba(75, 75, 75, 0.2);
+}
 .container {
     display: flex;
     align-items: center;
