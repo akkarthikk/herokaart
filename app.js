@@ -16,6 +16,22 @@ db.connect((err) => {
         console.error('Error connecting to the database', err);
     } else {
         console.log('Connected to the database');
+    }
+
+    db.on('error', (err) => {
+        console.error('Database connection error:', err);
+        if (err.code === 'ECONNRESET' || err.code === 'EPIPE') {
+            console.log('Attempting to reconnect to the database...');
+            db.connect()
+                .then(() => {
+                    console.log('Reconnected to the database successfully');
+                })
+                .catch(error => {
+                    console.error('Failed to reconnect to the database:', error);
+                });
+        }
+    });
+});
 
         app.get('/get', (req, res) => {
             db.query('SELECT * FROM users', (err, result) => {
@@ -28,7 +44,6 @@ db.connect((err) => {
             });
         });
 
-        // Render the form page
         app.get('/', (req, res) => {
             res.render('app.ejs');  
         });
@@ -155,5 +170,4 @@ db.connect((err) => {
         app.listen(port, () => {
             console.log(`Server is running on port http://localhost:${port}`);
         });
-    }
-});
+    
