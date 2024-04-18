@@ -4,7 +4,7 @@ import pg from "pg";
 
 const app = express();
 const port = 3000;
-
+app.use(express.static('public'));
 const db = new pg.Client({
     connectionString: 'postgres://hjjzniqp:eYx43GLcFLNibenQB3GqhXZodJwLHx9l@rain.db.elephantsql.com/hjjzniqp',
 });
@@ -30,11 +30,81 @@ db.connect((err) => {
 
         // Render the form page
         app.get('/', (req, res) => {
-            res.render('app.ejs'); 
+            res.render('app.ejs');  
+        });
+        app.get('/admin', (req, res) => {
+            res.render('admin.ejs');
+        });
+        app.post('/delete', (req, res) => {
+            const email = req.body['email'];
+            const password = req.body['password'];
+            try {
+                db.query("DELETE FROM users")
+                    .then(result => {
+                        res.json({ message: "Users deleted successfully" });
+                    })
+                    .catch(error => {
+                        console.error("Error deleting user:", error);
+                        res.status(500).json({ error: "Internal server error" });
+                    });
+            } catch (error) {
+                console.error("Error processing request:", error);
+                res.status(500).json({ error: "Internal server error" });
+            }
         });
 
+        app.post('/manage', (req, res) => {
+            const email = req.body['email'];
+            const password = req.body['password'];
+            try {
+                db.query("DELETE FROM users WHERE email = $1 AND password = $2", [email, password])
+                    .then(result => {
+                        res.json({ message: "User deleted successfully" });
+                    })
+                    .catch(error => {
+                        console.error("Error deleting user:", error);
+                        res.status(500).json({ error: "Internal server error" });
+                    });
+            } catch (error) {
+                console.error("Error processing request:", error);
+                res.status(500).json({ error: "Internal server error" });
+            }
+        });
+        app.post('/adminlogin', (req, res) => {
+            const email = req.body['email'];
+            const password = req.body['password'];
+            db.query("SELECT * FROM users WHERE email = $1 AND password = $2", [email, password])
+                .then(result => {
+                    if (result.rows.length > 0) {
+                        res.render("admindashboard.ejs", { users: result.rows });
+                    } else {
+                        res.json({ message: "No user found" });
+                    }
+                })
+                .catch(err => {
+                    console.error("Error executing query:", err);
+                    res.status(500).json({ error: "Internal server error" });
+                });
+        });
+        app.get('/adminusers', (req, res) => {
+            db.query("SELECT * FROM users")
+                .then(result => {
+                    if (result.rows.length > 0) {
+                        res.render("admin_users.ejs", { users: result.rows });
+                    } else {
+                        res.json({ message: "No user found" });
+                    }
+                })
+                .catch(err => {
+                    console.error("Error executing query:", err);
+                    res.status(500).json({ error: "Internal server error" });
+                });
+        });
+    
+        
+
         // Handle form submission
-        app.post('/post', (req, res) => {
+        app.post('/signup', (req, res) => {
             const username = req.body['username'];
             const email = req.body['email'];
             const name = req.body['name'];
@@ -45,7 +115,7 @@ db.connect((err) => {
             try {
                 db.query("INSERT INTO users (username, email,name,password,security_question,security_answer) VALUES ($1, $2,$3,$4,$5,$6)", [username, email, name, password, question, answer])
                     .then(result => {
-                        res.redirect('/get');
+                        res.render("success.ejs");
                     })
                     .catch(error => {
                         console.error(error);
@@ -63,25 +133,25 @@ db.connect((err) => {
             }
         });
 
-        app.get('/find', (req, res) => {
-            res.render("find.ejs");
+        app.get('/recover', (req, res) => {
+            res.render("recover.ejs");
         });
-        app.post('/find', (req, res) => {
+        app.post('/recover', (req, res) => {
             const email = req.body['email'];
             const answer = req.body['s_answer'];
-            db.query("select username,password from users where email=$1 and security_answer=$2", [email,answer], (err, result) => {
+            db.query("SELECT username, password FROM users WHERE email = $1 AND security_answer = $2", [email, answer], (err, result) => {
                 if (err) {
                     console.error("Error executing query:", err);
                     res.status(500).json({ error: "Internal server error" });
                 } else {
-                    res.json(result.rows);
+                    if (result.rows.length > 0) {
+                        res.json(result.rows);
+                    } else {
+                        res.json({ message: "No user found" });
+                    }
                 }
             });
-        })
-
-
-
-// Start the Express server
+        });
         app.listen(port, () => {
             console.log(`Server is running on port http://localhost:${port}`);
         });

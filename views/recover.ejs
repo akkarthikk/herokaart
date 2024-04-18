@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Form</title>
+    <title>Recover Credentials</title>
+    <link rel="stylesheet" href="style/login.css">
 </head>
 <body>
-    <form action="/find" method="POST">
-        <label for="email">Email:</label>
+    <div class="container">
+    <form action="/recover" method="POST">
+        <label for="email">Email:</label><br>
         <input type="email" id="email" name="email" required autocomplete="off" autofocus="on"><br><br>
-        <label for="text">Security Answer:</label>
+        <label for="text">Security Answer:</label><br>
         <input type="s_answer" id="s_answer" name="s_answer" required autocomplete="nope"><br><br>
-        <button type="submit">Find</button>
+        <button type="submit">Recover</button>
     </form>
+    </div>
 </body>
 </html>
